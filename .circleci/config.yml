@@ -15,10 +15,10 @@ jobs:
     executor:
       name: win/default
     steps:
+      - checkout
       - run: # print the name of the branch we're on
           name: "What branch am I on?"
           command: echo ${CIRCLE_BRANCH}
-      - checkout
       - run:
           name: "Install project dependencies"
           command: dotnet restore src/chex.sln
