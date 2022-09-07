@@ -17,6 +17,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: "Print an env var stored in the Project"
+          command: echo ${TEST_ENV_VAR}
+      - run:
           name: "Install project dependencies"
           command: dotnet restore src/chex.sln
       - run:
