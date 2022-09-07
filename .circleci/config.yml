@@ -18,7 +18,7 @@ jobs:
       - checkout
       - run:
           name: "Install project dependencies"
-          command: dotnet restore
+          command: dotnet restore src/chex.sln
 workflows:
   test_and_build:
     jobs:
