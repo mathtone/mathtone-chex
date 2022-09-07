@@ -27,6 +27,12 @@ jobs:
       name: win/default
     steps:
       - run:
+          command: echo "Deploying (Alpha) packages to nuget.org"
+  deploy-pkg-release:
+    executor:
+      name: win/default
+    steps:
+      - run:
           command: echo "Deploying packages to nuget.org"
 workflows:
   build_and_deploy:
@@ -37,8 +43,13 @@ workflows:
           name: "Deploy Package (Alpha)"
           requires:
             - "Checkout Project"
-      - approve-beta:  
+      - approve-release:  
           name: "Approve Release"
           type: approval
           requires:
             - "Deploy Package (Alpha)"
+      - deploy-release:
+          name: "Deploy Release"
+          requires:
+            - "Approve Release"
+        
