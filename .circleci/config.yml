@@ -3,27 +3,27 @@
 version: 2.1
 
 orbs:
-  windows: circleci/windows@2.2.0
-
+  win: circleci/windows@5
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
-jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
-    steps:
-      - checkout
-      - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+jobs:
+  checkout:
+    description: Setup and run application tests
+    executor:
+      name: win/default
+    steps:
+      - checkout
+      - run:
+          name: "Install project dependencies"
+          command: dotnet restore src/chex.sln
+
+      - run:
+          name: "Build Project"
+          command: dotnet build src/chex.sln --configuration Release
 workflows:
-  say-hello-workflow:
+  test_and_build:
     jobs:
-      - say-hello
+      - checkout
