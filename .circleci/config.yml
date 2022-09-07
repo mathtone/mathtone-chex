@@ -29,11 +29,6 @@ jobs:
     steps:
       - run:
           command: echo "hi"
-  # deploy:
-  #   executor:
-  #     name: win/default
-  #   steps:
-  #     - run: echo "TEST"
 workflows:
   build_and_deploy:
     jobs:
@@ -43,5 +38,6 @@ workflows:
           requires:
             - checkout
       - deploy-pkg:
+          name: "Deploy Package"
           requires:
             - approve-alpha
