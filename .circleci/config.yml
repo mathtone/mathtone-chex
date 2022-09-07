@@ -38,7 +38,10 @@ workflows:
   build_and_deploy:
     jobs:
       - checkout
-      - hold:
+      - approve-alpha:
           type: approval
           requires:
-              - checkout
+            - checkout
+      - deploy-pkg:
+          requires:
+            - approve-alpha
