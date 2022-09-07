@@ -28,16 +28,17 @@ jobs:
       name: win/default
     steps:
       - run:
-          command: echo "hi"
+          command: echo "Deploying packages to nuget.org"
 workflows:
   build_and_deploy:
     jobs:
       - checkout
-      - approve-alpha:
+      - approve-alpha:  
+          name: "Approve Release"
           type: approval
           requires:
             - checkout
       - deploy-pkg:
           name: "Deploy Package"
           requires:
-            - approve-alpha
+            - "Approve Release"
