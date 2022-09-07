@@ -6,7 +6,7 @@
 	  <Nullable>enable</Nullable>
 	  <PackageId>$(AssemblyName)</PackageId>
 	  <Title>Chex Testing </Title>
-	  <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	  <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 	  <Version>$(VersionPrefix)</Version>
 	  <VersionPrefix>0.0.0</VersionPrefix>
 	  <VersionSuffix>alpha</VersionSuffix>
