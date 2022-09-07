@@ -35,6 +35,8 @@ workflows:
           name: "Checkout Project"
       - deploy-pkg-alpha:
           name: "Deploy Package (Alpha)"
+          requires:
+            - "Checkout Project"
       - approve-beta:  
           name: "Approve Release"
           type: approval
