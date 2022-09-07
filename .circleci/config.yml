@@ -48,7 +48,7 @@ workflows:
           type: approval
           requires:
             - "Deploy Package (Alpha)"
-      - deploy-release:
+      - deploy-pkg-release:
           name: "Deploy Release"
           requires:
             - "Approve Release"
