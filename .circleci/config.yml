@@ -28,6 +28,8 @@ jobs:
     steps:
       - run:
           command: echo "Deploying (Alpha) packages to nuget.org"
+      - run:
+          command: echo ""
   deploy-pkg-release:
     executor:
       name: win/default
