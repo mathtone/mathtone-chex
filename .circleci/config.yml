@@ -10,13 +10,16 @@ orbs:
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 jobs:
-  test:
+  checkout:
     description: Setup and run application tests
     executor:
       name: win/default
     steps:
       - checkout
+      - run:
+          name: "Install project dependencies"
+          command: dotnet restore
 workflows:
   test_and_build:
     jobs:
-      - test
+      - checkout
