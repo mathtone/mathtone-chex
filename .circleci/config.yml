@@ -11,7 +11,7 @@ orbs:
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 jobs:
   checkout:
-    description: Checkout and build Application
+    description: Setup and run application tests
     executor:
       name: win/default
     steps:
@@ -23,7 +23,12 @@ jobs:
       - run:
           name: "Build Project"
           command: dotnet build src/chex.sln --configuration Release
+  deploy:
+    executor:
+      name: win/default
+    steps:
+      - run: echo "TEST"    
 workflows:
-  test_and_build:
+  build_and_deploy:
     jobs:
       - checkout
