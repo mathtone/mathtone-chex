@@ -18,7 +18,7 @@ jobs:
       - checkout
       - run:
           name: "Print an env var stored in the Project"
-          command: echo ${CIRCLE_WORKING_DIRECTORY}
+          command: echo $CIRCLE_WORKING_DIRECTORY
       - run:
           name: "Install project dependencies"
           command: dotnet restore src/chex.sln
