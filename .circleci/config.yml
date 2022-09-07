@@ -23,13 +23,22 @@ jobs:
       - run:
           name: "Build Project"
           command: dotnet build src/chex.sln --configuration Release
-  deploy:
+  deploy-pkg:
     executor:
       name: win/default
     steps:
-      - run: echo "TEST"    
+      - run:
+          command: echo "hi"
+  # deploy:
+  #   executor:
+  #     name: win/default
+  #   steps:
+  #     - run: echo "TEST"
 workflows:
   build_and_deploy:
     jobs:
       - checkout
-      - deploy 
+      - hold:
+          type: approval
+          requires:
+              - checkout
