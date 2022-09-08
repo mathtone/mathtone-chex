@@ -9,12 +9,12 @@ jobs: # basic units of work in a run
       - run:
           name: "What branch am I on now?"
           command: echo $CIRCLE_BRANCH
-      - run:
-          name: "Create Workspace"
-          command: mkdir -p workspace
+      # - run:
+      #     name: "Create Workspace"
+      #     command: mkdir -p workspace
       - run:
           name: "Say Hello"
-          command: echo "Hello, world!" > workspace/echo-output
+          command: echo "Hello, world!" > echo-output
       - persist_to_workspace:
           root: ~/workspace
           paths:
