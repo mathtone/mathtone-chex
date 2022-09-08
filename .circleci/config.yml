@@ -41,7 +41,7 @@ jobs:
       - attach_workspace:
           at: .
       - checkout
-      - run: dotnet nuget push NugetPackages/Chex.0.0.0-alpha.nupkg --api-key << parameters.key >> --source https://api.nuget.org/v3/index.json
+      - run: dotnet nuget push NugetPackages/Chex.0.0.0-alpha.nupkg --api-key $NUGET_PUBLISH_KEY --source https://api.nuget.org/v3/index.json
       # - run: dotnet nuget push NugetPackages/Chex.Testing.0.0.0-alpha.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
       # - run: dotnet nuget push NugetPackages/Chex.Testing.Xunit.0.0.0-alpha.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
           
@@ -66,6 +66,6 @@ workflows:
           name: "Ship Alpha"
           context: MATHTONE_DEV
           suffix: -alpha
-          key: $NUGET_PUBLISH_KEY
+          key: $(NUGET_PUBLISH_KEY)
           requires:
             - Pack Alpha
