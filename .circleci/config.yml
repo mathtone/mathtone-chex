@@ -19,73 +19,9 @@ jobs: # basic units of work in a run
           command: dotnet build src/chex.sln --configuration Release
       - run:
           name: "Pack Nuget Files"
-          command: dotnet pack src/chex.sln --configuration Release --no-build -version-suffix alpha
+          command: dotnet pack src/chex.sln --configuration Release --no-build --version-suffix alpha
 workflows: # a single workflow with a single job called build
   build:
     jobs:
       - build:
           context: Testing-Env-Vars
-
-# # Use the latest 2.1 version of CircleCI pipeline process engine.
-# # See: https://circleci.com/docs/2.0/configuration-reference
-# version: 2.1
-
-# orbs:
-#   win: circleci/windows@5
-# # Define a job to be invoked later in a workflow.
-# # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
-
-# # Invoke jobs via workflows
-# # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
-# jobs:
-#   checkout:
-#     description: Setup and run application tests
-#     executor:
-#       name: win/default
-#     steps:
-#       - checkout
-#       - run: # print the name of the branch we're on
-#           name: "What branch am I on?"
-#           command: echo ${CIRCLE_BRANCH}
-#       - run: # print the name of the branch we're on
-#           name: "What branch am I on?"
-#           command: echo $CIRCLE_BRANCH
-#       - run:
-#           name: "Install project dependencies"
-#           command: dotnet restore src/chex.sln
-#       - run:
-#           name: "Build Project"
-#           command: dotnet build src/chex.sln --configuration Release
-#   deploy-pkg-alpha:
-#     executor:
-#       name: win/default
-#     steps:
-#       - run:
-#           command: echo "Deploying (Alpha) packages to nuget.org"
-#       - run:
-#           command: echo ""
-#   deploy-pkg-release:
-#     executor:
-#       name: win/default
-#     steps:
-#       - run:
-#           command: echo "Deploying packages to nuget.org"
-# workflows:
-#   build_and_deploy:
-#     jobs:
-#       - checkout:
-#           name: "Checkout Project"
-#       - deploy-pkg-alpha:
-#           name: "Deploy Package (Alpha)"
-#           requires:
-#             - "Checkout Project"
-#       - approve-release:  
-#           name: "Approve Release"
-#           type: approval
-#           requires:
-#             - "Deploy Package (Alpha)"
-#       - deploy-pkg-release:
-#           name: "Deploy Release"
-#           requires:
-#             - "Approve Release"
-        
