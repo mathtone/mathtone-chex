@@ -58,6 +58,9 @@ jobs: # basic units of work in a run
       - run:
           name: "What branch am I on now?"
           command: echo $CIRCLE_BRANCH
+      - run:
+          name: "What branch am I on now?"
+          command: echo $MATHTONE_NUGET_PUB
       # - run:
       #     command: |
       #       dotnet nuget push NugetPackages/Chex.0.0.0-alpha.nupkg --api-key $MATHTONE_NUGET_PUB --source https://api.nuget.org/v3/index.json
