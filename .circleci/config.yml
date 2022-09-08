@@ -15,6 +15,7 @@ jobs: # basic units of work in a run
       - run:
           name: "Say Hello"
           command: echo "Hello, world!" > echo-output
+      - run: ls -l
       - persist_to_workspace:
           root: ~/
           paths:
