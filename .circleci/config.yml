@@ -58,9 +58,6 @@ jobs: # basic units of work in a run
     steps: # steps that comprise the `build` job
       - attach_workspace:
           at: .
-      # - run:
-      #     name: "What branch am I on now?"
-      #     command: echo $CIRCLE_BRANCH
       - run:
           name: "What branch am I on now?"
           command: echo $MATHTONE_NUGET_PUB
@@ -92,7 +89,7 @@ workflows: # a single workflow with a single job called build
           requires:
             - build
       - publish-alpha:
-          apikey: $MATHTONE_NUGET_PUB
+          apikey: ${MATHTONE_NUGET_PUB}
           requires:
             - pack-alpha
 
