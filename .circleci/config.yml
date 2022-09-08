@@ -17,16 +17,16 @@ jobs: # basic units of work in a run
           command: echo "Hello, world!" > ~/echo-output
       - run: ls -l
       - persist_to_workspace:
-          root: ~/
+          root: .
           paths:
-            - echo-output
+            - .
 
   reattach:
     docker: # use the Docker executor
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
       - attach_workspace:
-          at: "~/"
+          at: .
 
   build:
     docker: # use the Docker executor
@@ -34,7 +34,7 @@ jobs: # basic units of work in a run
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps: # steps that comprise the `build` job
       - attach_workspace:
-          at: "~/"
+          at: .
       - checkout # check out source code to working directory
       - run:
           name: "What branch am I on now?"
@@ -49,10 +49,9 @@ jobs: # basic units of work in a run
           name: "Pack Nuget Files"
           command: dotnet pack src/chex.sln --configuration Release --no-build --version-suffix alpha --output NugetPackages
       - persist_to_workspace:
-          root: "~/"
-          # Must be relative path from root
+          root: .
           paths:
-            - "root/project/src/Chex.Testing.Xunit/bin/Release/net6.0/"
+            - .
   deploy:
     docker: # use the Docker executor
       # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
