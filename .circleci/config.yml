@@ -40,3 +40,8 @@ workflows:
           suffix: --version-suffix alpha
           requires:
             - build
+      - pack:
+          context: MATHTONE_DEV
+          suffix: ""
+          requires:
+            - build
