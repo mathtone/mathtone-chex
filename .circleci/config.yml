@@ -16,10 +16,7 @@ jobs: # basic units of work in a run
           name: "Say Hello"
           command: echo "Hello, world!" > workspace/echo-output
       - persist_to_workspace:
-          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
-          # taken to be the root directory of the workspace.
           root: workspace
-          # Must be relative path from root
           paths:
             - echo-output
   reattach:
@@ -41,9 +38,6 @@ jobs: # basic units of work in a run
           name: "What branch am I on now?"
           command: echo $CIRCLE_BRANCH
       - run:
-          name: "Create Workspace"
-          command: "mkdir -p workspace"
-      - run:
           name: "Install project dependencies"
           command: dotnet restore src/chex.sln
       - run:
@@ -53,12 +47,10 @@ jobs: # basic units of work in a run
           name: "Pack Nuget Files"
           command: dotnet pack src/chex.sln --configuration Release --no-build --version-suffix alpha --output NugetPackages
       - persist_to_workspace:
-          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
-          # taken to be the root directory of the workspace.
-          root: /root/project/src
+          root: workspace
           # Must be relative path from root
           paths:
-            - "/Chex.Testing.Xunit/bin/Release/net6.0/"
+            - "/Chex.Testing.Xunit/bin/Release/net6.0/*.*"
   deploy:
     docker: # use the Docker executor
       # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
@@ -75,6 +67,9 @@ workflows: # a single workflow with a single job called build
       - reattach:
           requires:
             - checkup
+      - build:
+          requires:
+            - reattach
       # - build:
       #     requires:
       #       - checkup
