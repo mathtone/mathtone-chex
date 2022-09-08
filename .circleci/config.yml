@@ -13,7 +13,7 @@ jobs: # basic units of work in a run
           command: echo $CIRCLE_BRANCH
       - run:
           name: "Create Workspace"
-          command: "- run: mkdir -p workspace"
+          command: "mkdir -p workspace"
       - run:
           name: "Install project dependencies"
           command: dotnet restore src/chex.sln
