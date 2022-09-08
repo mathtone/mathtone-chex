@@ -86,7 +86,7 @@ workflows: # a single workflow with a single job called build
   build:
     jobs:
       - check:
-          apikey: $MATHTONE_NUGET_PUB
+          apikey: ${MATHTONE_NUGET_PUB}
       - build:
           requires:
             - check
