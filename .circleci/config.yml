@@ -19,6 +19,9 @@ jobs:
       - run: # print the name of the branch we're on
           name: "What branch am I on?"
           command: echo ${CIRCLE_BRANCH}
+      - run: # print the name of the branch we're on
+          name: "What branch am I on?"
+          command: echo $CIRCLE_BRANCH
       - run:
           name: "Install project dependencies"
           command: dotnet restore src/chex.sln
