@@ -1,13 +1,16 @@
 version: 2.1
-
+orbs:
+  win: circleci/windows@5
 jobs: # basic units of work in a run
   build:
-    docker: # use the Docker executor
-      # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
-      - image: cimg/node:17.2.0
-        auth:
-          username: mydockerhub-user
-          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+    executor:
+      name: win/default
+    # docker: # use the Docker executor
+    #   # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
+    #   - image: cimg/node:17.2.0
+    #     # auth:
+    #     #   username: mydockerhub-user
+    #     #   password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
     steps: # steps that comprise the `build` job
       - checkout # check out source code to working directory
       # Run a step to setup an environment variable
@@ -15,9 +18,9 @@ jobs: # basic units of work in a run
       - run:
           name: "Setup custom environment variables"
           command: echo 'export MY_ENV_VAR="FOO"' >> $BASH_ENV
-      - run: # print the name of the branch we're on
-          name: "What branch am I on?"
-          command: echo ${CIRCLE_BRANCH}
+      # - run: # print the name of the branch we're on
+      #     name: "What branch am I on?"
+      #     command: echo ${CIRCLE_BRANCH}
       # Run another step, the same as above; note that you can
       # invoke environment variable without curly braces.
       - run:
