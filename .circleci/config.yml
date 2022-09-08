@@ -20,8 +20,26 @@ jobs: # basic units of work in a run
       - run:
           name: "Pack Nuget Files"
           command: dotnet pack src/chex.sln --configuration Release --no-build --version-suffix alpha --output NugetPackages
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
+          # taken to be the root directory of the workspace.
+          root: workspace
+          # Must be relative path from root
+          paths:
+            - echo-output
+  deploy:
+    docker: # use the Docker executor
+      # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - attach_workspace:
+          at: ""
+      - run:
+          command: echo "HI"
 workflows: # a single workflow with a single job called build
   build:
     jobs:
       - build:
           context: Testing-Env-Vars
+      - deploy
+      
