@@ -79,9 +79,9 @@ jobs: # basic units of work in a run
     steps: # steps that comprise the `build` job
       - attach_workspace:
           at: .
-      - run: dotnet nuget push NugetPackages/Chex.0.0.0-alpha.nupkg --api-key $MATHTONE_NUGET_PUBLISH --source https://api.nuget.org/v3/index.json
-      - run: dotnet nuget push NugetPackages/Chex.Testing.0.0.0-alpha.nupkg --api-key $MATHTONE_NUGET_PUBLISH --source https://api.nuget.org/v3/index.json
-      - run: dotnet nuget push NugetPackages/Chex.Testing.Xunit.0.0.0-alpha.nupkg --api-key $MATHTONE_NUGET_PUBLISH --source https://api.nuget.org/v3/index.json
+      - run: dotnet nuget push NugetPackages/Chex.0.0.0-alpha.nupkg --api-key ${MATHTONE_NUGET_PUBLISH} --source https://api.nuget.org/v3/index.json
+      # - run: dotnet nuget push NugetPackages/Chex.Testing.0.0.0-alpha.nupkg --api-key $MATHTONE_NUGET_PUBLISH --source https://api.nuget.org/v3/index.json
+      # - run: dotnet nuget push NugetPackages/Chex.Testing.Xunit.0.0.0-alpha.nupkg --api-key $MATHTONE_NUGET_PUBLISH --source https://api.nuget.org/v3/index.json
   deploy:
     docker: # use the Docker executor
       # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
