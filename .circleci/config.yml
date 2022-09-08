@@ -16,7 +16,7 @@ jobs: # basic units of work in a run
           name: "Say Hello"
           command: echo "Hello, world!" > workspace/echo-output
       - persist_to_workspace:
-          root: workspace
+          root: ~/
           paths:
             - echo-output
   reattach:
@@ -24,7 +24,7 @@ jobs: # basic units of work in a run
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
       - attach_workspace:
-          at: "/workspace"
+          at: "~/"
 
   build:
     docker: # use the Docker executor
@@ -32,7 +32,7 @@ jobs: # basic units of work in a run
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps: # steps that comprise the `build` job
       - attach_workspace:
-          at: "/workspace"
+          at: "~/"
       - checkout # check out source code to working directory
       - run:
           name: "What branch am I on now?"
@@ -50,7 +50,7 @@ jobs: # basic units of work in a run
           root: "~/"
           # Must be relative path from root
           paths:
-            - "Chex.Testing.Xunit/bin/Release/net6.0"
+            - "src/Chex.Testing.Xunit/bin/Release/net6.0"
   deploy:
     docker: # use the Docker executor
       # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
