@@ -12,7 +12,9 @@ jobs: # basic units of work in a run
       - run:
           name: "Create Workspace"
           command: mkdir -p workspace
-      - run: echo "Hello, world!" > workspace/echo-output
+      - run:
+          name: "Say Hello"
+          command: echo "Hello, world!" > workspace/echo-output
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
           # taken to be the root directory of the workspace.
@@ -25,6 +27,8 @@ jobs: # basic units of work in a run
       # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps: # steps that comprise the `build` job
+      - attach_workspace:
+          at: "/"
       - checkout # check out source code to working directory
       - run:
           name: "What branch am I on now?"
@@ -61,8 +65,10 @@ workflows: # a single workflow with a single job called build
   build:
     jobs:
       - checkup
-      # - build:
-      #     context: Testing-Env-Vars
+      - build:
+          requires:
+            - checkup
+          context: Testing-Env-Vars
       # - deploy:
       #     requires:
       #       - "build"
