@@ -2,32 +2,8 @@ version: 2.1
 orbs:
   win: circleci/windows@5
 jobs: # basic units of work in a run
-  # checkup:
-  #   docker: # use the Docker executor
-  #     - image: mcr.microsoft.com/dotnet/sdk:6.0
-  #   steps:
-  #     - run:
-  #         name: "What branch am I on now?"
-  #         command: echo $CIRCLE_BRANCH
-  #     # - run:
-  #     #     name: "Create Workspace"
-  #     #     command: mkdir -p workspace
-
-  #     - persist_to_workspace:
-  #         root: .
-  #         paths:
-  #           - .
-
-  # reattach:
-  #   docker: # use the Docker executor
-  #     - image: mcr.microsoft.com/dotnet/sdk:6.0
-  #   steps:
-  #     - attach_workspace:
-  #         at: .
-
   build:
     docker: # use the Docker executor
-      # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps: # steps that comprise the `build` job
       - attach_workspace:
@@ -80,8 +56,11 @@ jobs: # basic units of work in a run
       - attach_workspace:
           at: .
       - run:
-          command: |
-            dotnet nuget push NugetPackages/Chex.0.0.0-alpha.nupkg --api-key $CIRCLE_BRANCH --source https://api.nuget.org/v3/index.json
+          name: "What branch am I on now?"
+          command: echo $CIRCLE_BRANCH
+      # - run:
+      #     command: |
+      #       dotnet nuget push NugetPackages/Chex.0.0.0-alpha.nupkg --api-key $MATHTONE_NUGET_PUB --source https://api.nuget.org/v3/index.json
         
       # - run: dotnet nuget push NugetPackages/Chex.Testing.0.0.0-alpha.nupkg --api-key $MATHTONE_NUGET_PUBLISH --source https://api.nuget.org/v3/index.json
       # - run: dotnet nuget push NugetPackages/Chex.Testing.Xunit.0.0.0-alpha.nupkg --api-key $MATHTONE_NUGET_PUBLISH --source https://api.nuget.org/v3/index.json
