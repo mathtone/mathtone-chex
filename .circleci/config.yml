@@ -3,11 +3,9 @@ orbs:
   win: circleci/windows@5
 jobs: # basic units of work in a run
   build:
-    executor:
-      name: win/default
-    # docker: # use the Docker executor
-    #   # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
-    #   - image: cimg/node:17.2.0
+    docker: # use the Docker executor
+      # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
+      - image: cimg/node:17.2.0
     #     # auth:
     #     #   username: mydockerhub-user
     #     #   password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
