@@ -52,7 +52,7 @@ jobs: # basic units of work in a run
           root: .
           paths:
             - .
-  pack:
+  pack-alpha:
     docker: # use the Docker executor
       # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
       - image: mcr.microsoft.com/dotnet/sdk:6.0
@@ -62,6 +62,20 @@ jobs: # basic units of work in a run
       - run:
            name: "Pack Nuget Files"
            command: dotnet pack src/chex.sln --configuration Release --no-build --version-suffix alpha --output NugetPackages
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+  pack-release:
+    docker: # use the Docker executor
+      # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps: # steps that comprise the `build` job
+      - attach_workspace:
+          at: .
+      - run:
+           name: "Pack Nuget Files"
+           command: dotnet pack src/chex.sln --configuration Release --no-build --output NugetPackages
       - persist_to_workspace:
           root: .
           paths:
@@ -85,7 +99,10 @@ workflows: # a single workflow with a single job called build
       - build:
           requires:
             - reattach
-      - pack:
+      - pack-alpha:
+          requires:
+            - build
+      - pack-release:
           requires:
             - build
       # - build:
