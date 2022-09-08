@@ -35,8 +35,6 @@ jobs:
     parameters:
       suffix:
         type: string
-      key:
-        type: string
     steps:
       - attach_workspace:
           at: .
@@ -65,6 +63,15 @@ workflows:
           name: "Ship Alpha"
           context: MATHTONE_DEV
           suffix: -alpha
-          key: ${NUGET_PUBLISH_KEY}
           requires:
             - Pack Alpha
+      - approve-release:
+          type: approval
+          requires:
+            - Pack Release
+      - ship:
+          name: "Ship Release"
+          context: MATHTONE_DEV
+          suffix: ""
+          requires:
+            - approve-release
