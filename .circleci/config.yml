@@ -1,20 +1,11 @@
 version: 2.1
-orbs:
-  win: circleci/windows@5
-jobs: # basic units of work in a run
+
+jobs:
   build:
-    docker: # use the Docker executor
+    docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
-    steps: # steps that comprise the `build` job
-      - attach_workspace:
-          at: .
-      - checkout # check out source code to working directory
-      - run:
-          name: "What branch am I on now?"
-          command: echo $CIRCLE_BRANCH
-      - run:
-          name: "Install project dependencies"
-          command: dotnet restore src/chex.sln
+    steps: 
+      - checkout
       - run:
           name: "Build Project"
           command: dotnet build src/chex.sln --configuration Release
@@ -22,88 +13,8 @@ jobs: # basic units of work in a run
           root: .
           paths:
             - .
-  pack-alpha:
-    docker: # use the Docker executor
-      # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
-      - image: mcr.microsoft.com/dotnet/sdk:6.0
-    steps: # steps that comprise the `build` job
-      - attach_workspace:
-          at: .
-      - run:
-           name: "Pack Nuget Files"
-           command: dotnet pack src/chex.sln --configuration Release --no-build --version-suffix alpha --output NugetPackages
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./NugetPackages
-  pack-release:
-    docker: # use the Docker executor
-      - image: mcr.microsoft.com/dotnet/sdk:6.0
-    steps: # steps that comprise the `build` job
-      - attach_workspace:
-          at: .
-      - run:
-           name: "Pack Nuget Files"
-           command: dotnet pack src/chex.sln --configuration Release --no-build --output NugetPackages
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./NugetPackages
-  publish-alpha:
-    docker: # use the Docker executor
-      - image: mcr.microsoft.com/dotnet/sdk:6.0
-    parameters:
-      apikey:
-        type: string
-    steps: # steps that comprise the `build` job
-      - attach_workspace:
-          at: .
-      - run:
-          name: "What branch am I on now?"
-          command: echo $MATHTONE_NUGET_PUB
-      - run: "dotnet nuget push NugetPackages/Chex.0.0.0-alpha.nupkg --api-key << parameters.apikey >> --source https://api.nuget.org/v3/index.json"
-        
-      # - run: dotnet nuget push NugetPackages/Chex.Testing.0.0.0-alpha.nupkg --api-key $MATHTONE_NUGET_PUBLISH --source https://api.nuget.org/v3/index.json
-      # - run: dotnet nuget push NugetPackages/Chex.Testing.Xunit.0.0.0-alpha.nupkg --api-key $MATHTONE_NUGET_PUBLISH --source https://api.nuget.org/v3/index.json
-  deploy:
-    docker: # use the Docker executor
-      # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
-      - image: mcr.microsoft.com/dotnet/sdk:6.0
-    steps:
-      - attach_workspace:
-          at: "workspace"
-      - run:
-          command: echo "HI"
-  check:
-    docker: # use the Docker executor
-      - image: mcr.microsoft.com/dotnet/sdk:6.0
-    parameters:
-      apikey:
-        type: string
-    steps:
-      - run: << parameters.apikey >>
-workflows: # a single workflow with a single job called build
-  test:
-    jobs:
-      - check:
-          apikey: $MATHTONE_NUGET_PUB
-
+workflows:
   build:
     jobs:
-      # - checkup
-      # - reattach:
-      #     requires:
-      #       - checkup
-      - build
-      - pack-alpha:
-          requires:
-            - build
-      - pack-release:
-          requires:
-            - build
-      - publish-alpha:
-          apikey: ${MATHTONE_NUGET_PUB}
-          requires:
-            - pack-alpha
-
-      
+      - build:
+          context: MATHTONE_DEV
