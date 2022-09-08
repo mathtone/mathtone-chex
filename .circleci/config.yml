@@ -13,9 +13,9 @@ jobs: # basic units of work in a run
       - checkout # check out source code to working directory
       # Run a step to setup an environment variable
       # Redirect MY_ENV_VAR into $BASH_ENV
-      - run:
-          name: "Setup custom environment variables"
-          command: echo 'export MY_ENV_VAR="FOO"' >> $BASH_ENV
+      # - run:
+      #     name: "Setup custom environment variables"
+      #     command: echo 'export MY_ENV_VAR="FOO"' >> $BASH_ENV
       # - run: # print the name of the branch we're on
       #     name: "What branch am I on?"
       #     command: echo ${CIRCLE_BRANCH}
@@ -24,15 +24,15 @@ jobs: # basic units of work in a run
       - run:
           name: "What branch am I on now?"
           command: echo $CIRCLE_BRANCH
-      - run:
-          name: "What was my custom environment variable?"
-          command: echo ${MY_ENV_VAR}
-      - run:
-          name: "Print an env var stored in the Project"
-          command: echo ${PROJECT_ENV_VAR}
-      - run:
-          name: "Print an env var stored in a Context"
-          command: echo ${CONTEXT_ENV_VAR}
+      # - run:
+      #     name: "What was my custom environment variable?"
+      #     command: echo ${MY_ENV_VAR}
+      # - run:
+      #     name: "Print an env var stored in the Project"
+      #     command: echo ${PROJECT_ENV_VAR}
+      # - run:
+      #     name: "Print an env var stored in a Context"
+      #     command: echo ${CONTEXT_ENV_VAR}
 
 workflows: # a single workflow with a single job called build
   build:
