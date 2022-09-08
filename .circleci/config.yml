@@ -6,7 +6,6 @@ jobs:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
       - checkout
-      - run: ${TEST_VAR}
       - run:
           name: "Build Project"
           command: dotnet build src/chex.sln --configuration Release
