@@ -62,7 +62,6 @@ jobs: # basic units of work in a run
             - ./NugetPackages
   pack-release:
     docker: # use the Docker executor
-      # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps: # steps that comprise the `build` job
       - attach_workspace:
@@ -74,6 +73,15 @@ jobs: # basic units of work in a run
           root: .
           paths:
             - ./NugetPackages
+  publish-alpha:
+    docker: # use the Docker executor
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps: # steps that comprise the `build` job
+      - attach_workspace:
+          at: .
+      - run:
+           name: "Publish Alpha to Nuget"
+           command: 
   deploy:
     docker: # use the Docker executor
       # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
