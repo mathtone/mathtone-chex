@@ -36,7 +36,7 @@ jobs: # basic units of work in a run
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
       - attach_workspace:
-          at: ""
+          at: "workspace"
       - run:
           command: echo "HI"
 workflows: # a single workflow with a single job called build
@@ -44,5 +44,8 @@ workflows: # a single workflow with a single job called build
     jobs:
       - build:
           context: Testing-Env-Vars
-      - deploy
+      - deploy:
+          requires:
+            - "build"
+
       
