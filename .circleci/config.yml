@@ -9,6 +9,10 @@ jobs: # basic units of work in a run
       - run:
           name: "What branch am I on now?"
           command: echo $CIRCLE_BRANCH
+      - run:
+          name: "Create Workspace"
+          command: mkdir -p workspace
+      - run: echo "Hello, world!" > workspace/echo-output
   build:
     docker: # use the Docker executor
       # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
