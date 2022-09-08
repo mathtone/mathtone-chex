@@ -59,7 +59,7 @@ jobs: # basic units of work in a run
       - persist_to_workspace:
           root: .
           paths:
-            - .
+            - ./NugetPackages
   pack-release:
     docker: # use the Docker executor
       # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
@@ -73,7 +73,7 @@ jobs: # basic units of work in a run
       - persist_to_workspace:
           root: .
           paths:
-            - .
+            - ./NugetPackages
   deploy:
     docker: # use the Docker executor
       # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
