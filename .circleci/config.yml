@@ -67,6 +67,6 @@ workflows:
           name: "Ship Alpha"
           context: MATHTONE_DEV
           suffix: -alpha
-          key: $(NUGET_PUBLISH_KEY)
+          key: ${NUGET_PUBLISH_KEY}
           requires:
             - Pack Alpha
