@@ -14,7 +14,7 @@ jobs: # basic units of work in a run
       #     command: mkdir -p workspace
       - run:
           name: "Say Hello"
-          command: echo "Hello, world!" > echo-output
+          command: echo "Hello, world!" > ~/echo-output
       - run: ls -l
       - persist_to_workspace:
           root: ~/
