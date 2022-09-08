@@ -33,7 +33,12 @@ jobs:
     docker: 
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
-      - run: "dotnet nuget push NugetPackages/Chex.0.0.0-alpha.nupkg --api-key $NUGET_PUBLISH_KEY --source https://api.nuget.org/v3/index.json"
+      - attach_workspace:
+          at: .
+      - run:
+          command: $TEST_VAR
+      - run:
+          command: dotnet nuget push NugetPackages/Chex.0.0.0-alpha.nupkg --api-key $NUGET_PUBLISH_KEY --source https://api.nuget.org/v3/index.json
 workflows:
   build:
     jobs:
