@@ -50,7 +50,7 @@ jobs: # basic units of work in a run
           root: "~/"
           # Must be relative path from root
           paths:
-            - "Chex.Testing.Xunit/bin/Release/net6.0/*.*"
+            - "Chex.Testing.Xunit/bin/Release/net6.0"
   deploy:
     docker: # use the Docker executor
       # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
