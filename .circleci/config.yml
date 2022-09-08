@@ -72,10 +72,11 @@ workflows: # a single workflow with a single job called build
   build:
     jobs:
       - checkup
-      - build:
-          requires:
-            - checkup
-          context: Testing-Env-Vars
+      - reattach
+      # - build:
+      #     requires:
+      #       - checkup
+      #     context: Testing-Env-Vars
       # - deploy:
       #     requires:
       #       - "build"
