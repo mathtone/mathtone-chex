@@ -2,6 +2,13 @@ version: 2.1
 orbs:
   win: circleci/windows@5
 jobs: # basic units of work in a run
+  checkup:
+    docker: # use the Docker executor
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - run:
+          name: "What branch am I on now?"
+          command: echo $CIRCLE_BRANCH
   build:
     docker: # use the Docker executor
       # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
@@ -42,10 +49,11 @@ jobs: # basic units of work in a run
 workflows: # a single workflow with a single job called build
   build:
     jobs:
-      - build:
-          context: Testing-Env-Vars
-      - deploy:
-          requires:
-            - "build"
+      - checkup
+      # - build:
+      #     context: Testing-Env-Vars
+      # - deploy:
+      #     requires:
+      #       - "build"
 
       
