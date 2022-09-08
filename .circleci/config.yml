@@ -105,5 +105,8 @@ workflows: # a single workflow with a single job called build
       - pack-release:
           requires:
             - build
+      - publish-alpha:
+          requires:
+            - pack-alpha
 
       
