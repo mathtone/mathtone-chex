@@ -5,6 +5,8 @@ jobs:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps: 
+      
+      - run: $TEST_VAR
       - checkout
       - run:
           name: "Build Project"
