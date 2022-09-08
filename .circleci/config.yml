@@ -14,8 +14,7 @@ jobs:
           paths:
             - .
   pack:
-    docker: # use the Docker executor
-      # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
+    docker: 
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     parameters:
       suffix:
@@ -30,18 +29,30 @@ jobs:
           root: .
           paths:
             - ./NugetPackages
+  ship:
+    docker: 
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - run: echo hi
 workflows:
   build:
     jobs:
       - build:
           context: MATHTONE_DEV
       - pack:
+          name: "Pack Alpha"
           context: MATHTONE_DEV
           suffix: --version-suffix alpha
           requires:
             - build
       - pack:
+          name: "Pack Release"
           context: MATHTONE_DEV
           suffix: ""
           requires:
             - build
+      - ship:
+          name: "Ship Alpha"
+          context: MATHTONE_DEV          
+          requires:
+            - Pack Alpha
