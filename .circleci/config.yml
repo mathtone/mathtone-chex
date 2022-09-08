@@ -16,9 +16,11 @@ jobs: # basic units of work in a run
           name: "Say Hello"
           command: echo "Hello, world!" > echo-output
       - persist_to_workspace:
-          root: ~/workspace
+          root: ~/
           paths:
             - echo-output
+      - run: ls -l
+
   reattach:
     docker: # use the Docker executor
       - image: mcr.microsoft.com/dotnet/sdk:6.0
