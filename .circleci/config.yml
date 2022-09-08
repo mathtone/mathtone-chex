@@ -72,7 +72,9 @@ workflows: # a single workflow with a single job called build
   build:
     jobs:
       - checkup
-      - reattach
+      - reattach:
+          requires:
+            - checkup
       # - build:
       #     requires:
       #       - checkup
