@@ -2,31 +2,28 @@ version: 2.1
 orbs:
   win: circleci/windows@5
 jobs: # basic units of work in a run
-  checkup:
-    docker: # use the Docker executor
-      - image: mcr.microsoft.com/dotnet/sdk:6.0
-    steps:
-      - run:
-          name: "What branch am I on now?"
-          command: echo $CIRCLE_BRANCH
-      # - run:
-      #     name: "Create Workspace"
-      #     command: mkdir -p workspace
-      - run:
-          name: "Say Hello"
-          command: echo "Hello, world!" > ~/echo-output
-      - run: ls -l
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
+  # checkup:
+  #   docker: # use the Docker executor
+  #     - image: mcr.microsoft.com/dotnet/sdk:6.0
+  #   steps:
+  #     - run:
+  #         name: "What branch am I on now?"
+  #         command: echo $CIRCLE_BRANCH
+  #     # - run:
+  #     #     name: "Create Workspace"
+  #     #     command: mkdir -p workspace
 
-  reattach:
-    docker: # use the Docker executor
-      - image: mcr.microsoft.com/dotnet/sdk:6.0
-    steps:
-      - attach_workspace:
-          at: .
+  #     - persist_to_workspace:
+  #         root: .
+  #         paths:
+  #           - .
+
+  # reattach:
+  #   docker: # use the Docker executor
+  #     - image: mcr.microsoft.com/dotnet/sdk:6.0
+  #   steps:
+  #     - attach_workspace:
+  #         at: .
 
   build:
     docker: # use the Docker executor
@@ -45,9 +42,6 @@ jobs: # basic units of work in a run
       - run:
           name: "Build Project"
           command: dotnet build src/chex.sln --configuration Release
-      # - run:
-      #     name: "Pack Nuget Files"
-      #     command: dotnet pack src/chex.sln --configuration Release --no-build --version-suffix alpha --output NugetPackages
       - persist_to_workspace:
           root: .
           paths:
@@ -92,25 +86,16 @@ jobs: # basic units of work in a run
 workflows: # a single workflow with a single job called build
   build:
     jobs:
-      - checkup
-      - reattach:
-          requires:
-            - checkup
-      - build:
-          requires:
-            - reattach
+      # - checkup
+      # - reattach:
+      #     requires:
+      #       - checkup
+      - build
       - pack-alpha:
           requires:
             - build
       - pack-release:
           requires:
             - build
-      # - build:
-      #     requires:
-      #       - checkup
-      #     context: Testing-Env-Vars
-      # - deploy:
-      #     requires:
-      #       - "build"
 
       
