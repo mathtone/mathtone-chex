@@ -74,7 +74,20 @@ jobs: # basic units of work in a run
           at: "workspace"
       - run:
           command: echo "HI"
+  check:
+    docker: # use the Docker executor
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    parameters:
+      apikey:
+        type: string
+    steps:
+      - run: << parameters.apikey >>
 workflows: # a single workflow with a single job called build
+  test:
+    jobs:
+      - check:
+          apikey: "ABC"
+
   build:
     jobs:
       # - checkup
