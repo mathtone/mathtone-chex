@@ -24,7 +24,7 @@ jobs:
             cd ../Chex.Testing.Xunit
             dotnet remove reference ../Chex/ChexTesting.csproj
             cd ..
-  build-and-publish:
+  pack-and-publish:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
@@ -35,7 +35,7 @@ jobs:
           command: |
             dotnet pack src/Chex/Chex.csproj --configuration Release
             
-  
+
   #  docker: 
   #    - image: mcr.microsoft.com/dotnet/sdk:6.0
   #  parameters:
@@ -73,6 +73,10 @@ workflows:
           context: MATHTONE_DEV
           requires:
             - checkout
+      - pack-and-publish:
+          context: MATHTONE_DEV
+          requires:
+            - remove-refs
       #- pack:
       #    name: "Pack Alpha"
       #    context: MATHTONE_DEV
