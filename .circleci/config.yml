@@ -4,7 +4,7 @@ jobs:
   build:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
-    steps: 
+    steps:
       - checkout
       - run:
           name: "Build Project"
@@ -13,8 +13,65 @@ jobs:
           root: .
           paths:
             - .
+  pack:
+    docker: 
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    parameters:
+      suffix:
+        type: string
+    steps: # steps that comprise the `build` job
+      - attach_workspace:
+          at: .
+      - run:
+           name: "Pack Nuget Files"
+           command: dotnet pack src/chex.sln --configuration Release --no-build << parameters.suffix >> --output NugetPackages
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./NugetPackages
+  ship:
+    docker: 
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    parameters:
+      suffix:
+        type: string
+    steps:
+      - attach_workspace:
+          at: .
+      - run: dotnet nuget push NugetPackages/Chex.0.0.0<< parameters.suffix >>.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
+      - run: dotnet nuget push NugetPackages/Chex.Testing.0.0.0<< parameters.suffix >>.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
+      - run: dotnet nuget push NugetPackages/Chex.Testing.Xunit.0.0.0<< parameters.suffix >>.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
+          
 workflows:
   build:
     jobs:
       - build:
           context: MATHTONE_DEV
+      - pack:
+          name: "Pack Alpha"
+          context: MATHTONE_DEV
+          suffix: --version-suffix alpha
+          requires:
+            - build
+      - pack:
+          name: "Pack Release"
+          context: MATHTONE_DEV
+          suffix: ""
+          requires:
+            - build
+      - ship:
+          name: "Ship Alpha"
+          context: MATHTONE_DEV
+          suffix: -alpha
+          requires:
+            - Pack Alpha
+      - approve-release:
+          type: approval
+          requires:
+            - Pack Release
+      - ship:
+          name: "Ship Release"
+          context: MATHTONE_DEV
+          suffix: ""
+          requires:
+            - approve-release
