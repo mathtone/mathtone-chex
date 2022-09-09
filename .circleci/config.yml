@@ -9,8 +9,8 @@ jobs:
       - run:
           name: "Remove Project Refs"
           command: |
-            dotnet remove reference ..\Chex\Chex.csproj ..\Chex\Chex.Testing.csproj
-            dotnet remove reference ..\Chex\ChexTesting.csproj ..\Chex\Chex.TestingXunit.csproj
+            dotnet remove reference src/Chex/Chex.csproj src/Chex/Chex.Testing.csproj
+            dotnet remove reference .src/Chex/Chex.Testing.csproj src/Chex/Chex.Testing.Xunit.csproj
       - run:
           name: "Build Project"
           command: dotnet build src/chex.sln --configuration Release
