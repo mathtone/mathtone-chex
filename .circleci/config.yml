@@ -6,22 +6,22 @@ jobs:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
       - checkout
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+    remove-refs:
+      - attach_workspace:
+          at: .
       - run:
           name: "Remove Project Refs"
           command: |
             cd src/Chex.Testing
             dotnet remove reference ../Chex/Chex.csproj
             cd ../Chex.Testing.Xunit
-            dotnet remove reference ../Chex/Chex.csproj
+            dotnet remove reference ../Chex/ChexTesting.csproj
             cd ..
-      - run:
-          name: "Build Chex"
-          command: dotnet build src/Chex/Chex.csproj --configuration Release
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
-  #pack:
+  
   #  docker: 
   #    - image: mcr.microsoft.com/dotnet/sdk:6.0
   #  parameters:
