@@ -10,7 +10,10 @@ jobs:
           root: .
           paths:
             - .
-    remove-refs:
+  remove-refs:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
       - attach_workspace:
           at: .
       - run:
@@ -55,6 +58,10 @@ workflows:
     jobs:
       - checkout:
           context: MATHTONE_DEV
+      - remove-refs:
+          context: MATHTONE_DEV
+          requires:
+            - checkout
       #- pack:
       #    name: "Pack Alpha"
       #    context: MATHTONE_DEV
