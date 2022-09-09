@@ -9,11 +9,14 @@ jobs:
       - run:
           name: "Remove Project Refs"
           command: |
-            dotnet remove reference src/Chex/Chex.csproj src/Chex/Chex.Testing.csproj
-            dotnet remove reference src/Chex/Chex.Testing.csproj src/Chex/Chex.Testing.Xunit.csproj
+            cd src/Chex.Testing
+            dotnet remove reference ../Chex/Chex.csproj
+            cd ../Chex.Testing.Xunit
+            dotnet remove reference ../Chex/Chex.csproj
+            cd ..
       - run:
-          name: "Build Project"
-          command: dotnet build src/chex.sln --configuration Release
+          name: "Build Chex"
+          command: dotnet build src/chex/Chex.csproj --configuration Release
       - persist_to_workspace:
           root: .
           paths:
