@@ -7,6 +7,11 @@ jobs:
     steps:
       - checkout
       - run:
+          name: "Remove Project Refs"
+          command: |
+            dotnet remove reference ..\Chex\Chex.csproj ..\Chex\Chex.Testing.csproj
+            dotnet remove reference ..\Chex\ChexTesting.csproj ..\Chex\Chex.TestingXunit.csproj
+      - run:
           name: "Build Project"
           command: dotnet build src/chex.sln --configuration Release
       - persist_to_workspace:
