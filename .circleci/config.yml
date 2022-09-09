@@ -36,7 +36,7 @@ jobs:
       - run:
           name: "Build and publish chex"
           command: |
-            dotnet pack src/Chex/Chex.csproj --configuration Release << parameters.suffix >> --output NugetPackages
+            dotnet pack src/Chex/Chex.csproj --configuration Release --version-suffix<< parameters.suffix >> --output NugetPackages
             
 
   #  docker: 
@@ -78,7 +78,7 @@ workflows:
             - checkout
       - pack-and-publish:
           context: MATHTONE_DEV
-          suffix: "-alpha"
+          suffix: alpha
           requires:
             - remove-refs
       #- pack:
