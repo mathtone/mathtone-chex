@@ -16,7 +16,7 @@ jobs:
             cd ..
       - run:
           name: "Build Chex"
-          command: dotnet build src/chex/Chex.csproj --configuration Release
+          command: dotnet build src/Chex/Chex.csproj --configuration Release
       - persist_to_workspace:
           root: .
           paths:
