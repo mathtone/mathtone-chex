@@ -27,13 +27,16 @@ jobs:
   pack-and-publish:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
+    parameters:
+      suffix :
+        type:  string
     steps:
       - attach_workspace:
           at: .
       - run:
           name: "Build and publish chex"
           command: |
-            dotnet pack src/Chex/Chex.csproj --configuration Release
+            dotnet pack src/Chex/Chex.csproj --configuration Release << parameters.suffix >> --output NugetPackages
             
 
   #  docker: 
