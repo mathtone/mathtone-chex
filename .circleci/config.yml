@@ -24,6 +24,17 @@ jobs:
             cd ../Chex.Testing.Xunit
             dotnet remove reference ../Chex/ChexTesting.csproj
             cd ..
+  build-and-publish:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Build and publish chex"
+          command: |
+            dotnet pack src/Chex/Chex.csproj --configuration Release
+            
   
   #  docker: 
   #    - image: mcr.microsoft.com/dotnet/sdk:6.0
