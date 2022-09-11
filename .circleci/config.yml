@@ -37,6 +37,7 @@ jobs:
           name: "Build and publish chex"
           command: |
             echo ${ARTIFACTORY_PUBLISH_KEY}
+            echo ${NUGET_PUBLISH_KEY}
             dotnet pack src/Chex/Chex.csproj --configuration Release --version-suffix << parameters.suffix >> --output NugetPackages
             dotnet nuget push NugetPackages/Chex.0.0.0-<< parameters.suffix >>.nupkg --api-key ${ARTIFACTORY_PUBLISH_KEY} --source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev
 
