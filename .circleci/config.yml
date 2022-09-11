@@ -53,7 +53,6 @@ jobs:
       - run:
           name: "Pack & Publish Chex.Testing.Xunit"
           command: |
-            dotnet add src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj package Chex.Testing --source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev -v 0.0.0-alpha
             dotnet pack src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj --configuration Release --version-suffix << parameters.suffix >> --output NugetPackages
       - run:
           name: Publish
