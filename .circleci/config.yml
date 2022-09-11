@@ -47,19 +47,21 @@ jobs:
       - run:
           name: "Pack & Publish Chex.Testing"
           command: |
-            dotnet add src/Chex.Testing/Chex.Testing.csproj package Chex --source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev -v 0.0.0-alpha
-            dotnet pack src/Chex.Testing/Chex.Testing.csproj --configuration Release --version-suffix << parameters.suffix >> --output NugetPackages
-            dotnet nuget push NugetPackages/Chex.Testing.0.0.0-alpha.nupkg --source Artifactory
-      - run:
-          name: "Pack & Publish Chex.Testing.Xunit"
-          command: |
-            dotnet add src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj package Chex.Testing --source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev -v 0.0.0-alpha
+            dotnet add src/Chex.Testing/Chex.Testing.csproj package Chex --source Mathtone-Dev -v 0.0.0-alpha
+            dotnet pack src/Chex.Testing/Chex.Testing.csproj --configuration Release --version-suffix alpha --output NugetPackages
+            dotnet nuget push NugetPackages/Chex.Testing.0.0.0-alpha.nupkg --source Mathtone-Dev
+
+      # - run:
+      #     name: "Pack & Publish Chex.Testing.Xunit"
+      #     command: |
+      #       dotnet add src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj package Chex.Testing --source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev -v 0.0.0-alpha
             
-      - run:
-          name: Publish
-          command: |
-            dotnet pack src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj --configuration Release --version-suffix << parameters.suffix >> --output NugetPackages
-            dotnet nuget push NugetPackages/Chex.Testing.Xunit.0.0.0-alpha.nupkg --source Artifactory
+      # - run:
+      #     name: Publish
+      #     command: |
+      #       dotnet build src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj --configuration Release 
+      #       dotnet pack src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj --configuration Release --version-suffix << parameters.suffix >> --output NugetPackages
+      #       dotnet nuget push NugetPackages/Chex.Testing.Xunit.0.0.0-alpha.nupkg --source Artifactory
             
       # - run:
       #     name: "Publish"
