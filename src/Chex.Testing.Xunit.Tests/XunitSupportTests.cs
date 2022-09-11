@@ -1,9 +1,9 @@
 using Xunit.Abstractions;
 
 namespace Chex.Testing.Xunit.Tests {
-	public class SupportTestFixture {
 
-	}
+	public class SupportTestFixture { }
+
 	public class XunitSupportTests : XunitTestBase<SupportTestFixture> {
 
 		public XunitSupportTests(ITestOutputHelper output, SupportTestFixture fixture) :
@@ -11,6 +11,6 @@ namespace Chex.Testing.Xunit.Tests {
 		}
 
 		[Fact]
-		public void CanConstructTestFixture() => Assert.True();
+		public void CanConstructTestFixture() { }
 	}
 }
