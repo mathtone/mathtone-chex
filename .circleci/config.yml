@@ -60,32 +60,32 @@ jobs:
           root: .
           paths:
             - .
-  # pack-and-publish-release:
-  #   docker:
-  #     - image: mcr.microsoft.com/dotnet/sdk:6.0
-  #   parameters:
-  #     suffix :
-  #       type:  string
-  #   steps:
-  #     - attach_workspace:
-  #         at: .
-  #     - run:
-  #         name: "Pack & Publish Chex"
-  #         command: |
-  #           dotnet pack src/Chex/Chex.csproj --configuration Release --version-suffix << parameters.suffix >> --output NugetPackages
-  #           dotnet nuget push NugetPackages/Chex.0.0.0.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
-  #     - run:
-  #         name: "Pack & Publish Chex.Testing"
-  #         command: |
-  #           dotnet add src/Chex.Testing/Chex.Testing.csproj package Chex --source https://api.nuget.org/v3/index.json -v 0.0.0-alpha
-  #           dotnet pack src/Chex.Testing/Chex.Testing.csproj --configuration Release --version-suffix alpha --output NugetPackages
-  #           dotnet nuget push NugetPackages/Chex.Testing.0.0.0.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
-  #     - run:
-  #         name: "Pack & Publish Chex.Testing.Xunit"
-  #         command: |
-  #           dotnet add src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj package Chex --source https://api.nuget.org/v3/index.json -v 0.0.0-alpha
-  #           dotnet pack src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj --configuration Release --version-suffix alpha --output NugetPackages
-  #           dotnet nuget push NugetPackages/Chex.Testing.Xunit.0.0.0.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
+  pack-and-publish-release:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    parameters:
+      suffix :
+        type:  string
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Pack & Publish Chex"
+          command: |
+            dotnet pack src/Chex/Chex.csproj --configuration Release --version-suffix << parameters.suffix >> --output NugetPackages
+            dotnet nuget push NugetPackages/Chex.0.0.0.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
+      - run:
+          name: "Pack & Publish Chex.Testing"
+          command: |
+            dotnet add src/Chex.Testing/Chex.Testing.csproj package Chex --source https://api.nuget.org/v3/index.json -v 0.0.0-alpha
+            dotnet pack src/Chex.Testing/Chex.Testing.csproj --configuration Release --version-suffix alpha --output NugetPackages
+            dotnet nuget push NugetPackages/Chex.Testing.0.0.0.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
+      - run:
+          name: "Pack & Publish Chex.Testing.Xunit"
+          command: |
+            dotnet add src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj package Chex --source https://api.nuget.org/v3/index.json -v 0.0.0-alpha
+            dotnet pack src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj --configuration Release --version-suffix alpha --output NugetPackages
+            dotnet nuget push NugetPackages/Chex.Testing.Xunit.0.0.0.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
 
           
 
@@ -131,6 +131,15 @@ workflows:
           suffix: alpha
           requires:
             - remove-refs
+      - request-release:
+          type: approval
+          requires:
+            - pack-and-publish-alpha
+      - pack-and-publish-release:
+          context: MATHTONE_DEV
+          suffix: alpha
+          requires:
+            - request-release
       #- pack:
       #    name: "Pack Alpha"
       #    context: MATHTONE_DEV
