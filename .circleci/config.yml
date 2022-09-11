@@ -23,6 +23,10 @@ jobs:
             cd ../Chex.Testing.Xunit
             dotnet remove reference ../Chex/ChexTesting.csproj
             cd ..
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
   pack-and-publish:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
@@ -33,13 +37,22 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: "Pack"
-          command: dotnet pack src/Chex/Chex.csproj --configuration Release --version-suffix << parameters.suffix >> --output NugetPackages
+          name: "Add Artifactory to Nuget Sources"
+          command: dotnet nuget add source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev --name Artifactory --username ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PWD} --store-password-in-clear-text
       - run:
-          name: "Publish"
+          name: "Pack & Publish Chex"
           command: |
-            dotnet nuget add source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev --name Artifactory --username ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PWD} --store-password-in-clear-text
+            dotnet pack src/Chex/Chex.csproj --configuration Release --version-suffix << parameters.suffix >> --output NugetPackages
             dotnet nuget push NugetPackages/Chex.0.0.0-alpha.nupkg --source Artifactory
+      - run:
+          name: "Pack & Publish Chex.Testing"
+          command: |
+            dotnet add src/Chex/Chex.Testing.csproj package Chex.0.0.0-alpha --source Artifactory
+            dotnet pack src/Chex/Chex.Testing.csproj --configuration Release --version-suffix << parameters.suffix >> --output NugetPackages
+            dotnet nuget push NugetPackages/Chex.Testing.0.0.0-alpha.nupkg --source Artifactory
+      # - run:
+      #     name: "Publish"
+          
 
   #  docker: 
   #    - image: mcr.microsoft.com/dotnet/sdk:6.0
