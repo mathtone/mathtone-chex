@@ -86,37 +86,6 @@ jobs:
             dotnet add src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj package Chex --source https://api.nuget.org/v3/index.json -v 0.0.0-alpha
             dotnet pack src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj --configuration Release --version-suffix alpha --output NugetPackages
             dotnet nuget push NugetPackages/Chex.Testing.Xunit.0.0.0.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
-
-          
-
-  #  docker: 
-  #    - image: mcr.microsoft.com/dotnet/sdk:6.0
-  #  parameters:
-  #    suffix:
-  #      type: string
-  #  steps: # steps that comprise the `build` job
-  #    - attach_workspace:
-  #        at: .
-  #    - run:
-  #         name: "Pack Nuget Files"
-  #         command: dotnet pack src/chex.sln --configuration Release --no-build << parameters.suffix >> --output NugetPackages
-  #    - persist_to_workspace:
-  #        root: .
-  #        paths:
-  #          - ./NugetPackages
-  #ship:
-  #  docker: 
-  #    - image: mcr.microsoft.com/dotnet/sdk:6.0
-  #  parameters:
-  #    suffix:
-  #      type: string
-  #  steps:
-  #    - attach_workspace:
-  #        at: .
-  #    - run: dotnet nuget push NugetPackages/Chex.0.0.0<< parameters.suffix >>.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
-  #    - run: dotnet nuget push NugetPackages/Chex.Testing.0.0.0<< parameters.suffix >>.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
-  #    - run: dotnet nuget push NugetPackages/Chex.Testing.Xunit.0.0.0<< parameters.suffix >>.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
-          
 workflows:
   build:
     jobs:
@@ -140,31 +109,3 @@ workflows:
           suffix: alpha
           requires:
             - request-release
-      #- pack:
-      #    name: "Pack Alpha"
-      #    context: MATHTONE_DEV
-      #    suffix: --version-suffix alpha
-      #    requires:
-      #      - build
-      #- pack:
-      #    name: "Pack Release"
-      #    context: MATHTONE_DEV
-      #    suffix: ""
-      #    requires:
-      #      - build
-      #- ship:
-      #    name: "Ship Alpha"
-      #    context: MATHTONE_DEV
-      #    suffix: -alpha
-      #    requires:
-      #      - Pack Alpha
-      #- approve-release:
-      #    type: approval
-      #    requires:
-      #      - Pack Release
-      #- ship:
-      #    name: "Ship Release"
-      #    context: MATHTONE_DEV
-      #    suffix: ""
-      #    requires:
-      #      - approve-release
