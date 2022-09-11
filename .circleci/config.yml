@@ -38,7 +38,7 @@ jobs:
       - run:
           name: "Publish"
           command: |
-            dotnet nuget add source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev --name Artifactory --username ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PWD} -store-password-in-clear-text
+            dotnet nuget add source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev --name Artifactory --username ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PWD} --store-password-in-clear-text
             dotnet nuget push Chex.0.0.0-alpha.nupkg --source Artifactory
 
   #  docker: 
