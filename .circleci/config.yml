@@ -39,6 +39,7 @@ jobs:
       - run:
           name: "Add Nuget & Artifactory to Nuget Sources"
           command: |
+            dotnet nuget add source https://api.nuget.org/v3/index.json --name Nuget
             dotnet nuget add source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev --name Mathtone-Dev --username ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PWD} --store-password-in-clear-text
       - run:
           name: "Pack & Publish Chex"
