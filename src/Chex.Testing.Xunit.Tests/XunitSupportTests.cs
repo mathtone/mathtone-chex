@@ -6,11 +6,11 @@ namespace Chex.Testing.Xunit.Tests {
 
 	public class XunitSupportTests : XunitTestBase<SupportTestFixture> {
 
-		public XunitSupportTests(ITestOutputHelper output, SupportTestFixture fixture) :
-			base(output, fixture) {
+		public XunitSupportTests(SupportTestFixture fixture, ITestOutputHelper output) : base( output,fixture) {
+
 		}
 
 		[Fact]
-		public void CanConstructTestFixture() { }
+		public void CanConstructTestFixture() => Assert.NotNull(this.TestData);
 	}
 }

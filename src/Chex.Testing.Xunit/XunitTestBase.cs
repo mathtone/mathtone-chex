@@ -21,6 +21,4 @@ namespace Chex.Testing.Xunit {
 
 		public ILogger<T> CreateLogger<T>() => new XunitLogger<T>(Output);
 	}
-
-
 }
