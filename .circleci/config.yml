@@ -47,9 +47,10 @@ jobs:
       - run:
           name: "Pack & Publish Chex.Testing"
           command: |
-            dotnet add src/Chex.Testing/Chex.Testing.csproj package Chex.0.0.0-alpha --source Artifactory
+            dotnet add src/Chex.Testing/Chex.Testing.csproj package Chex --source Artifactory --interactive -v 0.0.0-alpha
             dotnet pack src/Chex.Testing/Chex.Testing.csproj --configuration Release --version-suffix << parameters.suffix >> --output NugetPackages
             dotnet nuget push NugetPackages/Chex.Testing.0.0.0-alpha.nupkg --source Artifactory
+            
       # - run:
       #     name: "Publish"
           
