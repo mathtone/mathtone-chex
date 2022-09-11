@@ -78,7 +78,7 @@ workflows:
             - checkout
       - pack-and-publish:
           context: MATHTONE_DEV
-          suffix: alpha
+          suffix: -alpha
           requires:
             - remove-refs
       #- pack:
