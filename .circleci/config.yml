@@ -139,6 +139,8 @@ workflows:
             branches:
               only:
                 - /prerelease\/.*/
+          requires:
+            - run-alpha-unit-tests
       - prep-release:
           context: MATHTONE_DEV
           filters: #&filters-release # this yaml anchor sets filter configs to "filters-release"
