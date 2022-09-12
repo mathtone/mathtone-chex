@@ -32,6 +32,7 @@ commands:
       - run:
           name: Build and Pack << parameters.project >>
           command: |
+            echo << parameters.version >>
             dotnet build << parameters.project >> --configuration Release /p:VersionPrefix=<< parameters.version >>
             dotnet pack << parameters.project >> --configuration Release --no-build --output packages --version-suffix << parameters.suffix >> 
   pack-release:
