@@ -42,6 +42,7 @@ jobs:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
       - checkout
+      - run: echo << pipeline.git.tag >>
       - run:
           name: Add local package store
           command: |
@@ -118,7 +119,10 @@ workflows:
             branches:
               only:
                 - /prerelease\/.*/
-      - prep-release:
+      - run-unit-tests:
+          requires:
+            - prep-workspace
+      - publish-alphas-artifactory:
           context: MATHTONE_DEV
           filters: #&filters-release # this yaml anchor sets filter configs to "filters-release"
             branches:
