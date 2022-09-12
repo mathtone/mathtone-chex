@@ -191,10 +191,6 @@ workflows:
             - prep-alpha
       - publish-alphas-artifactory:
           context: MATHTONE_DEV
-          filters: #&filters-release # this yaml anchor sets filter configs to "filters-release"
-            branches:
-              only:
-                - /prerelease\/.*/
           requires:
             - run-alpha-unit-tests
       - prep-release:
@@ -206,6 +202,10 @@ workflows:
       - run-release-unit-tests:
           requires:
             - prep-release
+      - publish-release-nuget:
+          context: MATHTONE_DEV
+          requires:
+            - run-release-unit-tests
         
       #- run-unit-tests:
       #    requires:
