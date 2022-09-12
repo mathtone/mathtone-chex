@@ -1,0 +1,11 @@
+
+<Project>
+ <PropertyGroup>
+   <Title>Chex Test Framework</Title>
+	<Authors>Mik3c</Authors>
+	<Company>Mathtone</Company>
+	<Description>Chex test framework.</Description>
+	<Copyright>2022 Mathtone Industries</Copyright>
+	<RepositoryUrl>https://github.com/mathtone/mathtone-chex</RepositoryUrl>
+ </PropertyGroup>
+</Project>

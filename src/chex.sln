@@ -12,7 +12,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6E1FC0CF-DFA9-4294-A085-01E54E2135D6}"
 	ProjectSection(SolutionItems) = preProject
 		..\.circleci\config.yml = ..\.circleci\config.yml
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chex.Testing.Xunit.Tests", "Chex.Testing.Xunit.Tests\Chex.Testing.Xunit.Tests.csproj", "{EF322E29-6247-4F9E-9F80-33A9267A0DC2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +35,10 @@ Global
 		{3244A0FC-973A-4DA3-A10F-EBCCFA0A33CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3244A0FC-973A-4DA3-A10F-EBCCFA0A33CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3244A0FC-973A-4DA3-A10F-EBCCFA0A33CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF322E29-6247-4F9E-9F80-33A9267A0DC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF322E29-6247-4F9E-9F80-33A9267A0DC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF322E29-6247-4F9E-9F80-33A9267A0DC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF322E29-6247-4F9E-9F80-33A9267A0DC2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
