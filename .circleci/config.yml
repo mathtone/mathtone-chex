@@ -29,6 +29,7 @@ commands:
         type:
           string
     steps:
+      
       - run:
           name: Build and Pack << parameters.project >>
           command: |
@@ -36,7 +37,7 @@ commands:
             dotnet pack << parameters.project >> --configuration Release --no-build --output packages --version-suffix << parameters.suffix >> 
   
 jobs:
-  prep-workspace:
+  prep-alpha:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
@@ -47,9 +48,6 @@ jobs:
             mkdir packages
             dotnet nuget add source ~/project/packages --name Local
       - run: dotnet nuget list source
-      # - run:
-      #     name: Add Artifactory
-      #     command: dotnet nuget add source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev --name Mathtone-Dev --username ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PWD} --store-password-in-clear-text
       - run: dotnet restore src/chex.sln
       - pack:
           project: src/Chex/Chex.csproj
@@ -80,16 +78,18 @@ jobs:
           pkg: Chex.Testing.Xunit
           version: 0.0.0-alpha
       - run: dotnet build src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
-      # - run: dotnet add src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj package Chex.Testing --source ~/project/packages -v 0.0.0-alpha
-      # - run: dotnet clean src/chex.sln
-      # - run: dotnet restore src/chex.sln
-      # - run: dotnet build src/chex.sln --configuration Release
-      # - run: dotnet test src/chex.sln
       - persist_to_workspace:
           root: .
           paths:
             - .
+  prep-release:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - checkout
+      - run: echo << pipeline.git.tag >>
   run-unit-tests:
+
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
@@ -112,12 +112,22 @@ jobs:
 workflows:
   build:
     jobs:
-      - prep-workspace:
+      - prep-alpha:
           context: MATHTONE_DEV
-      - run-unit-tests:
-          requires:
-            - prep-workspace
-      - publish-alphas-artifactory:
+          filters: #&filters-release # this yaml anchor sets filter configs to "filters-release"
+            branches:
+              only:
+                - /prerelease\/.*/
+      - prep-release:
           context: MATHTONE_DEV
-          requires:
-            - run-unit-tests
+          filters: #&filters-release # this yaml anchor sets filter configs to "filters-release"
+            branches:
+              only:
+                - main
+      #- run-unit-tests:
+      #    requires:
+      #      - prep-workspace
+      #- publish-alphas-artifactory:
+      #    context: MATHTONE_DEV
+      #    requires:
+      #      - run-unit-tests

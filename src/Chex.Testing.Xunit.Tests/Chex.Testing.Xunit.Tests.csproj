@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Chex.Testing\Chex.Testing.csproj" />
+    <ProjectReference Include="..\Chex.Testing.Xunit\Chex.Testing.Xunit.csproj" />
   </ItemGroup>
 
 </Project>

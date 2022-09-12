@@ -7,7 +7,6 @@ namespace Chex.Testing.Xunit.Tests {
 	public class XunitSupportTests : XunitTestBase<SupportTestFixture> {
 
 		public XunitSupportTests(SupportTestFixture fixture, ITestOutputHelper output) : base( output,fixture) {
-
 		}
 
 		[Fact]
