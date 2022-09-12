@@ -17,7 +17,7 @@ commands:
     steps:
       - run: dotnet remove << parameters.proj >> reference << parameters.ref >>
       - run: dotnet add << parameters.proj >> package << parameters.pkg >> -v << parameters.version >> --source ~/project/packages
-  pack:
+  pack-pre:
     parameters:
       project:
         type:
@@ -29,12 +29,25 @@ commands:
         type:
           string
     steps:
-      
       - run:
           name: Build and Pack << parameters.project >>
           command: |
             dotnet build << parameters.project >> --configuration Release /p:VersionPrefix=<< parameters.version >>
             dotnet pack << parameters.project >> --configuration Release --no-build --output packages --version-suffix << parameters.suffix >> 
+  pack-release:
+    parameters:
+      project:
+        type:
+          string
+      version:
+        type:
+          string
+    steps:
+      - run:
+          name: Build and Pack << parameters.project >>
+          command: |
+            dotnet build << parameters.project >> --configuration Release
+            dotnet pack << parameters.project >> --configuration Release --no-build --output packages
   
 jobs:
   prep-alpha:
@@ -48,8 +61,9 @@ jobs:
           command: |
             mkdir packages
             dotnet nuget add source ~/project/packages --name Local
+      - run: dotnet nuget list source
       - run: dotnet restore src/chex.sln
-      - pack:
+      - pack-pre:
           project: src/Chex/Chex.csproj
           suffix: alpha
           version: 0.0.0
@@ -58,7 +72,7 @@ jobs:
           ref: ../Chex/Chex.csproj
           pkg: Chex
           version: 0.0.0-alpha
-      - pack:
+      - pack-pre:
           project: src/Chex.Testing/Chex.Testing.csproj
           suffix: alpha
           version: 0.0.0
@@ -67,11 +81,10 @@ jobs:
           ref: ../Chex.Testing/Chex.Testing.csproj
           pkg: Chex.Testing
           version: 0.0.0-alpha
-      - pack:
+      - pack-pre:
           project: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
           suffix: alpha
           version: 0.0.0
-      
       - swapref:
           proj: src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
           ref: ../Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
@@ -93,28 +106,26 @@ jobs:
           command: |
             mkdir packages
             dotnet nuget add source ~/project/packages --name Local
+      - run: dotnet nuget list source
       - run: dotnet restore src/chex.sln
-      - pack:
+      - pack-release:
           project: src/Chex/Chex.csproj
-          suffix: ""
           version: 0.0.0
       - swapref:
           proj: src/Chex.Testing/Chex.Testing.csproj
           ref: ../Chex/Chex.csproj
           pkg: Chex
-          version: 0.0.0-alpha
-      - pack:
+          version: 0.0.0
+      - pack-release:
           project: src/Chex.Testing/Chex.Testing.csproj
-          suffix: ""
           version: 0.0.0
       - swapref:
           proj: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
           ref: ../Chex.Testing/Chex.Testing.csproj
           pkg: Chex.Testing
-          version: 0.0.0-alpha
-      - pack:
+          version: 0.0.0
+      - pack-release:
           project: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
-          suffix: ""
           version: 0.0.0
       - swapref:
           proj: src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
@@ -126,6 +137,7 @@ jobs:
           root: .
           paths:
             - .
+
   run-alpha-unit-tests:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
@@ -180,7 +192,7 @@ workflows:
             - run-alpha-unit-tests
       - prep-release:
           context: MATHTONE_DEV
-          filters:
+          filters: #&filters-release # this yaml anchor sets filter configs to "filters-release"
             branches:
               only:
                 - main
