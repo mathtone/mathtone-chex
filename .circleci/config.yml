@@ -90,7 +90,6 @@ jobs:
       - checkout
       - run: echo << pipeline.git.tag >>
   run-alpha-unit-tests:
-
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
@@ -100,6 +99,18 @@ jobs:
       # - run: dotnet restore src/chex.sln
       # - run: dotnet build src/chex.sln --configuration Release
       - run: dotnet test src/chex.sln
+
+  run-release-unit-tests:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - attach_workspace:
+          at: .
+      - run: dotnet nuget add source ~/project/packages --name Local
+      # - run: dotnet restore src/chex.sln
+      # - run: dotnet build src/chex.sln --configuration Release
+      - run: dotnet test src/chex.sln
+  
   publish-alphas-artifactory:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
@@ -127,7 +138,17 @@ workflows:
           filters: #&filters-release # this yaml anchor sets filter configs to "filters-release"
             branches:
               only:
+                - /prerelease\/.*/
+      - prep-release:
+          context: MATHTONE_DEV
+          filters: #&filters-release # this yaml anchor sets filter configs to "filters-release"
+            branches:
+              only:
                 - main
+      - run-release-unit-tests:
+          requires:
+            - prep-release
+        
       #- run-unit-tests:
       #    requires:
       #      - prep-workspace
