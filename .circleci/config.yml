@@ -101,9 +101,11 @@ jobs:
   prep-release:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
+    environment:
+       PKG_VERSION: 0.0.1
     steps:
       - checkout
-      - run: echo << pipeline.git.tag >>
+      - run: echo ${PKG_VERSION}
       - run:
           name: Add local package store
           command: |
@@ -113,28 +115,28 @@ jobs:
       - run: dotnet restore src/chex.sln
       - pack-release:
           project: src/Chex/Chex.csproj
-          version: 0.0.0
+          version: ${PKG_VERSION}
       - swapref:
           proj: src/Chex.Testing/Chex.Testing.csproj
           ref: ../Chex/Chex.csproj
           pkg: Chex
-          version: 0.0.0
+          version: ${PKG_VERSION}
       - pack-release:
           project: src/Chex.Testing/Chex.Testing.csproj
-          version: 0.0.0
+          version: ${PKG_VERSION}
       - swapref:
           proj: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
           ref: ../Chex.Testing/Chex.Testing.csproj
           pkg: Chex.Testing
-          version: 0.0.0
+          version: ${PKG_VERSION}
       - pack-release:
           project: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
-          version: 0.0.0
+          version: ${PKG_VERSION}
       - swapref:
           proj: src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
           ref: ../Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
           pkg: Chex.Testing.Xunit
-          version: 0.0.0
+          version: ${PKG_VERSION}
       - run: dotnet build src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
       - persist_to_workspace:
           root: .
