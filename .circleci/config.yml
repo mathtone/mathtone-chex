@@ -1,148 +1,123 @@
 version: 2.1
+commands:
+  swapref:
+    parameters:
+      proj:
+        type:
+          string
+      ref:
+        type:
+          string
+      pkg:
+        type:
+          string
+      version:
+        type:
+          string
+    steps:
+      - run: dotnet remove << parameters.proj >> reference << parameters.ref >>
+      - run: dotnet add << parameters.proj >> package << parameters.pkg >> -v << parameters.version >> --source ~/project/packages
+  pack:
+    parameters:
+      project:
+        type:
+          string
+      suffix:
+        type:
+          string
+      version:
+        type:
+          string
+    steps:
+      - run:
+          name: Build and Pack << parameters.project >>
+          command: |
+            dotnet build << parameters.project >> --configuration Release /p:VersionPrefix=<< parameters.version >>
+            dotnet pack << parameters.project >> --configuration Release --no-build --output packages --version-suffix << parameters.suffix >> 
+  
 jobs:
-  checkout:
+  prep-workspace:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
       - checkout
+      - run:
+          name: Add local package store
+          command: |
+            mkdir packages
+            dotnet nuget add source ~/project/packages --name Local
+      - run: dotnet nuget list source
+      # - run:
+      #     name: Add Artifactory
+      #     command: dotnet nuget add source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev --name Mathtone-Dev --username ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PWD} --store-password-in-clear-text
+      - run: dotnet restore src/chex.sln
+      - pack:
+          project: src/Chex/Chex.csproj
+          suffix: alpha
+          version: 0.0.0
+      - swapref:
+          proj: src/Chex.Testing/Chex.Testing.csproj
+          ref: ../Chex/Chex.csproj
+          pkg: Chex
+          version: 0.0.0-alpha
+      - pack:
+          project: src/Chex.Testing/Chex.Testing.csproj
+          suffix: alpha
+          version: 0.0.0
+      - swapref:
+          proj: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
+          ref: ../Chex.Testing/Chex.Testing.csproj
+          pkg: Chex.Testing
+          version: 0.0.0-alpha
+      - pack:
+          project: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
+          suffix: alpha
+          version: 0.0.0
+      
+      - swapref:
+          proj: src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
+          ref: ../Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
+          pkg: Chex.Testing.Xunit
+          version: 0.0.0-alpha
+      - run: dotnet build src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
+      # - run: dotnet add src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj package Chex.Testing --source ~/project/packages -v 0.0.0-alpha
+      # - run: dotnet clean src/chex.sln
+      # - run: dotnet restore src/chex.sln
+      # - run: dotnet build src/chex.sln --configuration Release
+      # - run: dotnet test src/chex.sln
       - persist_to_workspace:
           root: .
           paths:
             - .
-  remove-refs:
+  run-unit-tests:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - attach_workspace:
+          at: .
+      - run: dotnet nuget add source ~/project/packages --name Local
+      # - run: dotnet restore src/chex.sln
+      # - run: dotnet build src/chex.sln --configuration Release
+      - run: dotnet test src/chex.sln
+  publish-alphas-artifactory:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
       - attach_workspace:
           at: .
       - run:
-          name: "Remove Project Refs"
-          command: |
-            cd src/Chex.Testing
-            dotnet remove reference ../Chex/Chex.csproj
-            cd ../Chex.Testing.Xunit
-            dotnet remove reference ../Chex/ChexTesting.csproj
-            cd ..
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
-  pack-and-publish-alpha:
-    docker:
-      - image: mcr.microsoft.com/dotnet/sdk:6.0
-    parameters:
-      suffix :
-        type:  string
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: "Add Nuget & Artifactory to Nuget Sources"
-          command: |
-            dotnet nuget add source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev --name Mathtone-Dev --username ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PWD} --store-password-in-clear-text
-            dotnet restore src/chex.sln
-      - run:
-          name: "Pack & Publish Chex"
-          command: |
-            dotnet pack src/Chex/Chex.csproj --configuration Release --version-suffix << parameters.suffix >> --output NugetPackages/Chex
-            dotnet nuget push NugetPackages/Chex/Chex.*-alpha.nupkg --source Mathtone-Dev
-      - run:
-          name: "Pack & Publish Chex.Testing"
-          command: |
-            dotnet add src/Chex.Testing/Chex.Testing.csproj package Chex --source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev -v 0.0.0-alpha
-            dotnet pack src/Chex.Testing/Chex.Testing.csproj --configuration Release --version-suffix alpha --output NugetPackages/Chex.Testing
-            dotnet nuget push NugetPackages/Chex.Testing/Chex.Testing.*-alpha.nupkg --source Mathtone-Dev
-      - run:
-          name: "Pack & Publish Chex.Testing.Xunit"
-          command: |
-            dotnet add src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj package Chex --source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev -v 0.0.0-alpha
-            dotnet pack src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj --configuration Release --version-suffix alpha --output NugetPackages/Chex.Testing.Xunit
-            dotnet nuget push NugetPackages/Chex.Testing.Xunit/Chex.Testing.Xunit.*-alpha.nupkg --source Mathtone-Dev
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
-  pack-and-publish-alpha-release:
-    docker:
-      - image: mcr.microsoft.com/dotnet/sdk:6.0
-    parameters:
-      suffix :
-        type:  string
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: "Pack & Publish Chex"
-          command: |
-            dotnet pack src/Chex/Chex.csproj --configuration Release --version-suffix << parameters.suffix >> --output NugetPackages
-            dotnet nuget push NugetPackages/Chex.*-alpha.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
-      - run:
-          name: "Pack & Publish Chex.Testing"
-          command: |
-            dotnet add src/Chex.Testing/Chex.Testing.csproj package Chex --source https://api.nuget.org/v3/index.json -v 0.0.0-alpha
-            dotnet pack src/Chex.Testing/Chex.Testing.csproj --configuration Release --version-suffix alpha --output NugetPackages
-            dotnet nuget push NugetPackages/Chex.Testing.*-alpha.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
-      - run:
-          name: "Pack & Publish Chex.Testing.Xunit"
-          command: |
-            dotnet add src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj package Chex --source https://api.nuget.org/v3/index.json -v 0.0.0-alpha
-            dotnet pack src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj --configuration Release --version-suffix alpha --output NugetPackages
-            dotnet nuget push NugetPackages/Chex.Testing.Xunit.*-alpha.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
-  publish-final-release:
-    docker:
-      - image: mcr.microsoft.com/dotnet/sdk:6.0
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: "Pack & Publish Chex"
-          command: |
-            dotnet pack src/Chex/Chex.csproj --configuration Release --output NugetPackages
-            dotnet nuget push NugetPackages/Chex.*.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
-      - run:
-          name: "Pack & Publish Chex.Testing"
-          command: |
-            dotnet add src/Chex.Testing/Chex.Testing.csproj package Chex --source https://api.nuget.org/v3/index.json -v 0.0.0
-            dotnet pack src/Chex.Testing/Chex.Testing.csproj --configuration Release --output NugetPackages
-            dotnet nuget push NugetPackages/Chex.Testing.*.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
-      - run:
-          name: "Pack & Publish Chex.Testing.Xunit"
-          command: |
-            dotnet add src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj package Chex --source https://api.nuget.org/v3/index.json -v 0.0.0
-            dotnet pack src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj --configuration Release --output NugetPackages
-            dotnet nuget push NugetPackages/Chex.Testing.Xunit.*.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
+          name: "Add Artifactory"
+          command: dotnet nuget add source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev --name Mathtone-Dev --username ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PWD} --store-password-in-clear-text
+      - run: dotnet nuget push packages/*.nupkg --source Mathtone-Dev
 workflows:
   build:
     jobs:
-      - checkout:
+      - prep-workspace:
           context: MATHTONE_DEV
-      - remove-refs:
-          context: MATHTONE_DEV
+      - run-unit-tests:
           requires:
-            - checkout
-      - pack-and-publish-alpha:
-          context: MATHTONE_DEV
-          suffix: alpha
-          requires:
-            - remove-refs
-      - request-release-alpha:
-          type: approval
-          requires:
-            - pack-and-publish-alpha
-      - request-release:
-          type: approval
-          requires:
-            - pack-and-publish-alpha
-      - pack-and-publish-alpha-release:
-          context: MATHTONE_DEV
-          suffix: alpha
-          requires:
-            - request-release-alpha
-      - publish-final-release:
-          filters:
-            branches:
-              only:
-                - main
+            - prep-workspace
+      - publish-alphas-artifactory:
           context: MATHTONE_DEV
           requires:
-            - request-release
+            - run-unit-tests
