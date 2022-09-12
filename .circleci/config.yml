@@ -107,6 +107,10 @@ workflows:
     jobs:
       - prep-workspace:
           context: MATHTONE_DEV
+          filters: #&filters-release # this yaml anchor sets filter configs to "filters-release"
+            branches:
+              only:
+                - /prerelease\/.*/
       - run-unit-tests:
           requires:
             - prep-workspace
