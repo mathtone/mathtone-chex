@@ -110,7 +110,7 @@ workflows:
           filters: #&filters-release # this yaml anchor sets filter configs to "filters-release"
             branches:
               only:
-                - /prerelease\/.*/
+                - /prereleasex\/.*/
       - run-unit-tests:
           requires:
             - prep-workspace
