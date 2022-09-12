@@ -57,7 +57,7 @@ jobs:
        PKG_VERSION: 0.0.1
     steps:
       - checkout
-      - run: echo << pipeline.git.tag >>
+      - run: echo ${PKG_VERSION}
       - run:
           name: Add local package store
           command: |
