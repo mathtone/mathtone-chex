@@ -55,7 +55,7 @@ jobs:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     environment:
-       PKG_VERSION: 0.0.1
+       PKG_VERSION: 0.0.2
     steps:
       - checkout
       - run: echo ${PKG_VERSION}
