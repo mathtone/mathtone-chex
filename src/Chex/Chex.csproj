@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
    <PropertyGroup>
-	  <TargetFramework>net6.0</TargetFramework>
 	  <ImplicitUsings>enable</ImplicitUsings>
 	  <Nullable>enable</Nullable>
 	  <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
@@ -11,6 +10,8 @@
 	  <VersionPrefix>0.0.0</VersionPrefix>
 	  <SignAssembly>False</SignAssembly>
 	  <AssemblyVersion></AssemblyVersion>
+	  <TargetFramework>net6.0</TargetFramework>
+	  <PackageOutputPath>$(OutputPath)../../</PackageOutputPath>
 	  
    </PropertyGroup>
 
