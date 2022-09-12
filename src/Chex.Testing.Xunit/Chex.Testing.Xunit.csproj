@@ -8,7 +8,6 @@
 	  <Title>Chex Testing </Title>
 	  <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 	  <Version>$(VersionPrefix)</Version>
-	  <VersionPrefix>0.0.0</VersionPrefix>
    </PropertyGroup>
 
    <ItemGroup>

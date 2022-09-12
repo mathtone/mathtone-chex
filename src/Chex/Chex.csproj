@@ -5,10 +5,8 @@
 	  <Nullable>enable</Nullable>
 	  <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 	  <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-	  <!--<GenerateAssemblyInfo>false</GenerateAssemblyInfo>-->
 	  <Version>$(VersionPrefix)</Version>
 	  <SignAssembly>False</SignAssembly>
-	  <AssemblyVersion></AssemblyVersion>
 	  <TargetFramework>net6.0</TargetFramework>
 	  <PackageOutputPath>$(OutputPath)../../</PackageOutputPath>
 	  
