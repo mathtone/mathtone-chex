@@ -53,6 +53,8 @@ jobs:
   prep-alpha:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
+    environment:
+       PKG_VERSION: 0.0.1
     steps:
       - checkout
       - run: echo << pipeline.git.tag >>
@@ -66,30 +68,30 @@ jobs:
       - pack-pre:
           project: src/Chex/Chex.csproj
           suffix: alpha
-          version: 0.0.0
+          version: ${PKG_VERSION}
       - swapref:
           proj: src/Chex.Testing/Chex.Testing.csproj
           ref: ../Chex/Chex.csproj
           pkg: Chex
-          version: 0.0.0-alpha
+          version: ${PKG_VERSION}-alpha
       - pack-pre:
           project: src/Chex.Testing/Chex.Testing.csproj
           suffix: alpha
-          version: 0.0.0
+          version: ${PKG_VERSION}
       - swapref:
           proj: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
           ref: ../Chex.Testing/Chex.Testing.csproj
           pkg: Chex.Testing
-          version: 0.0.0-alpha
+          version: ${PKG_VERSION}-alpha
       - pack-pre:
           project: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
           suffix: alpha
-          version: 0.0.0
+          version: ${PKG_VERSION}
       - swapref:
           proj: src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
           ref: ../Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
           pkg: Chex.Testing.Xunit
-          version: 0.0.0-alpha
+          version: ${PKG_VERSION}-alpha
       - run: dotnet build src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
       - persist_to_workspace:
           root: .
