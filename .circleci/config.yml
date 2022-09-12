@@ -11,12 +11,9 @@ commands:
       pkg:
         type:
           string
-      version:
-        type:
-          string
     steps:
       - run: dotnet remove << parameters.proj >> reference << parameters.ref >>
-      - run: dotnet add << parameters.proj >> package << parameters.pkg >> -v << parameters.version >> --source ~/project/packages
+      - run: dotnet add << parameters.proj >> package << parameters.pkg >> --source ~/project/packages --prerelease
   pack-pre:
     parameters:
       project:
@@ -25,22 +22,15 @@ commands:
       suffix:
         type:
           string
-      version:
-        type:
-          string
     steps:
       - run:
           name: Build and Pack << parameters.project >>
           command: |
-            echo << parameters.version >>
-            dotnet build << parameters.project >> --configuration Release /p:VersionPrefix=<< parameters.version >>
+            dotnet build << parameters.project >> --configuration Release
             dotnet pack << parameters.project >> --configuration Release --no-build --output packages --version-suffix << parameters.suffix >> 
   pack-release:
     parameters:
       project:
-        type:
-          string
-      version:
         type:
           string
     steps:
@@ -54,11 +44,8 @@ jobs:
   prep-alpha:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
-    environment:
-       PKG_VERSION: 0.0.1
     steps:
       - checkout
-      - run: echo ${PKG_VERSION}
       - run:
           name: Add local package store
           command: |
@@ -69,30 +56,25 @@ jobs:
       - pack-pre:
           project: src/Chex/Chex.csproj
           suffix: alpha
-          version: ${PKG_VERSION}
       - swapref:
           proj: src/Chex.Testing/Chex.Testing.csproj
           ref: ../Chex/Chex.csproj
           pkg: Chex
-          version: ${PKG_VERSION}-alpha
       - pack-pre:
           project: src/Chex.Testing/Chex.Testing.csproj
           suffix: alpha
-          version: ${PKG_VERSION}
+          
       - swapref:
           proj: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
           ref: ../Chex.Testing/Chex.Testing.csproj
           pkg: Chex.Testing
-          version: ${PKG_VERSION}-alpha
       - pack-pre:
           project: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
           suffix: alpha
-          version: ${PKG_VERSION}
       - swapref:
           proj: src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
           ref: ../Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
           pkg: Chex.Testing.Xunit
-          version: ${PKG_VERSION}-alpha
       - run: dotnet build src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
       - persist_to_workspace:
           root: .
@@ -101,11 +83,8 @@ jobs:
   prep-release:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
-    environment:
-       PKG_VERSION: 0.0.1
     steps:
       - checkout
-      - run: echo ${PKG_VERSION}
       - run:
           name: Add local package store
           command: |
@@ -115,28 +94,22 @@ jobs:
       - run: dotnet restore src/chex.sln
       - pack-release:
           project: src/Chex/Chex.csproj
-          version: ${PKG_VERSION}
       - swapref:
           proj: src/Chex.Testing/Chex.Testing.csproj
           ref: ../Chex/Chex.csproj
           pkg: Chex
-          version: ${PKG_VERSION}
       - pack-release:
           project: src/Chex.Testing/Chex.Testing.csproj
-          version: ${PKG_VERSION}
       - swapref:
           proj: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
           ref: ../Chex.Testing/Chex.Testing.csproj
           pkg: Chex.Testing
-          version: ${PKG_VERSION}
       - pack-release:
           project: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
-          version: ${PKG_VERSION}
       - swapref:
           proj: src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
           ref: ../Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
           pkg: Chex.Testing.Xunit
-          version: ${PKG_VERSION}
       - run: dotnet build src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
       - persist_to_workspace:
           root: .
