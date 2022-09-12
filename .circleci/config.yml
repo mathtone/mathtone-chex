@@ -29,6 +29,7 @@ commands:
         type:
           string
     steps:
+      
       - run:
           name: Build and Pack << parameters.project >>
           command: |
@@ -110,7 +111,7 @@ workflows:
           filters: #&filters-release # this yaml anchor sets filter configs to "filters-release"
             branches:
               only:
-                - /prereleasex\/.*/
+                - /prerelease\/.*/
       - run-unit-tests:
           requires:
             - prep-workspace
