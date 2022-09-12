@@ -119,9 +119,9 @@ workflows:
             branches:
               only:
                 - /prerelease\/.*/
-      - run-unit-tests:
+      - run-alpha-unit-tests:
           requires:
-            - prep-workspace
+            - prep-alpha
       - publish-alphas-artifactory:
           context: MATHTONE_DEV
           filters: #&filters-release # this yaml anchor sets filter configs to "filters-release"
