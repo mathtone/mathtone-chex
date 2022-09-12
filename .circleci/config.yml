@@ -89,7 +89,7 @@ jobs:
     steps:
       - checkout
       - run: echo << pipeline.git.tag >>
-  run-unit-tests:
+  run-alpha-unit-tests:
 
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
