@@ -17,7 +17,7 @@ commands:
     steps:
       - run: dotnet remove << parameters.proj >> reference << parameters.ref >>
       - run: dotnet add << parameters.proj >> package << parameters.pkg >> -v << parameters.version >> --source ~/project/packages
-  pack:
+  pack-pre:
     parameters:
       project:
         type:
@@ -29,12 +29,25 @@ commands:
         type:
           string
     steps:
-      
       - run:
           name: Build and Pack << parameters.project >>
           command: |
             dotnet build << parameters.project >> --configuration Release /p:VersionPrefix=<< parameters.version >>
             dotnet pack << parameters.project >> --configuration Release --no-build --output packages --version-suffix << parameters.suffix >> 
+  pack-release:
+    parameters:
+      project:
+        type:
+          string
+      version:
+        type:
+          string
+    steps:
+      - run:
+          name: Build and Pack << parameters.project >>
+          command: |
+            dotnet build << parameters.project >> --configuration Release
+            dotnet pack << parameters.project >> --configuration Release --no-build --output packages
   
 jobs:
   prep-alpha:
@@ -50,7 +63,7 @@ jobs:
             dotnet nuget add source ~/project/packages --name Local
       - run: dotnet nuget list source
       - run: dotnet restore src/chex.sln
-      - pack:
+      - pack-pre:
           project: src/Chex/Chex.csproj
           suffix: alpha
           version: 0.0.0
@@ -59,7 +72,7 @@ jobs:
           ref: ../Chex/Chex.csproj
           pkg: Chex
           version: 0.0.0-alpha
-      - pack:
+      - pack-pre:
           project: src/Chex.Testing/Chex.Testing.csproj
           suffix: alpha
           version: 0.0.0
@@ -68,11 +81,10 @@ jobs:
           ref: ../Chex.Testing/Chex.Testing.csproj
           pkg: Chex.Testing
           version: 0.0.0-alpha
-      - pack:
+      - pack-pre:
           project: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
           suffix: alpha
           version: 0.0.0
-      
       - swapref:
           proj: src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
           ref: ../Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
@@ -89,8 +101,44 @@ jobs:
     steps:
       - checkout
       - run: echo << pipeline.git.tag >>
-  run-alpha-unit-tests:
+      - run:
+          name: Add local package store
+          command: |
+            mkdir packages
+            dotnet nuget add source ~/project/packages --name Local
+      - run: dotnet nuget list source
+      - run: dotnet restore src/chex.sln
+      - pack-release:
+          project: src/Chex/Chex.csproj
+          version: 0.0.0
+      - swapref:
+          proj: src/Chex.Testing/Chex.Testing.csproj
+          ref: ../Chex/Chex.csproj
+          pkg: Chex
+          version: 0.0.0
+      - pack-release:
+          project: src/Chex.Testing/Chex.Testing.csproj
+          version: 0.0.0
+      - swapref:
+          proj: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
+          ref: ../Chex.Testing/Chex.Testing.csproj
+          pkg: Chex.Testing
+          version: 0.0.0
+      - pack-release:
+          project: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
+          version: 0.0.0
+      - swapref:
+          proj: src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
+          ref: ../Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
+          pkg: Chex.Testing.Xunit
+          version: 0.0.0
+      - run: dotnet build src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
 
+  run-alpha-unit-tests:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
@@ -100,6 +148,18 @@ jobs:
       # - run: dotnet restore src/chex.sln
       # - run: dotnet build src/chex.sln --configuration Release
       - run: dotnet test src/chex.sln
+
+  run-release-unit-tests:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - attach_workspace:
+          at: .
+      - run: dotnet nuget add source ~/project/packages --name Local
+      # - run: dotnet restore src/chex.sln
+      # - run: dotnet build src/chex.sln --configuration Release
+      - run: dotnet test src/chex.sln
+  
   publish-alphas-artifactory:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
@@ -110,6 +170,13 @@ jobs:
           name: "Add Artifactory"
           command: dotnet nuget add source https://mathtone.jfrog.io/artifactory/api/nuget/v3/mathtone-dev --name Mathtone-Dev --username ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PWD} --store-password-in-clear-text
       - run: dotnet nuget push packages/*.nupkg --source Mathtone-Dev
+  publish-release-nuget:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - attach_workspace:
+          at: .
+      - run: dotnet nuget push packages/*.nupkg --api-key ${NUGET_PUBLISH_KEY} --source https://api.nuget.org/v3/index.json
 workflows:
   build:
     jobs:
@@ -124,14 +191,18 @@ workflows:
             - prep-alpha
       - publish-alphas-artifactory:
           context: MATHTONE_DEV
+          requires:
+            - run-alpha-unit-tests
+      - prep-release:
+          context: MATHTONE_DEV
           filters: #&filters-release # this yaml anchor sets filter configs to "filters-release"
             branches:
               only:
                 - main
-      #- run-unit-tests:
-      #    requires:
-      #      - prep-workspace
-      #- publish-alphas-artifactory:
-      #    context: MATHTONE_DEV
-      #    requires:
-      #      - run-unit-tests
+      - run-release-unit-tests:
+          requires:
+            - prep-release
+      - publish-release-nuget:
+          context: MATHTONE_DEV
+          requires:
+            - run-release-unit-tests
