@@ -48,7 +48,6 @@ jobs:
           command: |
             mkdir packages
             dotnet nuget add source ~/project/packages --name Local
-      - run: dotnet nuget list source
       - run: dotnet restore src/chex.sln
       - pack:
           project: src/Chex/Chex.csproj
@@ -89,6 +88,44 @@ jobs:
     steps:
       - checkout
       - run: echo << pipeline.git.tag >>
+      - run:
+          name: Add local package store
+          command: |
+            mkdir packages
+            dotnet nuget add source ~/project/packages --name Local
+      - run: dotnet restore src/chex.sln
+      - pack:
+          project: src/Chex/Chex.csproj
+          suffix: ""
+          version: 0.0.0
+      - swapref:
+          proj: src/Chex.Testing/Chex.Testing.csproj
+          ref: ../Chex/Chex.csproj
+          pkg: Chex
+          version: 0.0.0-alpha
+      - pack:
+          project: src/Chex.Testing/Chex.Testing.csproj
+          suffix: ""
+          version: 0.0.0
+      - swapref:
+          proj: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
+          ref: ../Chex.Testing/Chex.Testing.csproj
+          pkg: Chex.Testing
+          version: 0.0.0-alpha
+      - pack:
+          project: src/Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
+          suffix: ""
+          version: 0.0.0
+      - swapref:
+          proj: src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
+          ref: ../Chex.Testing.Xunit/Chex.Testing.Xunit.csproj
+          pkg: Chex.Testing.Xunit
+          version: 0.0.0
+      - run: dotnet build src/Chex.Testing.Xunit.Tests/Chex.Testing.Xunit.Tests.csproj
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
   run-alpha-unit-tests:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:6.0
@@ -143,7 +180,7 @@ workflows:
             - run-alpha-unit-tests
       - prep-release:
           context: MATHTONE_DEV
-          filters: #&filters-release # this yaml anchor sets filter configs to "filters-release"
+          filters:
             branches:
               only:
                 - main
